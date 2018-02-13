@@ -39,10 +39,10 @@ CREATE TABLE IF NOT EXISTS `t_user` (
 --
 
 INSERT INTO `t_user` (`user_id`, `name`, `email`, `password`) VALUES
-(1, 'Mas Banyar', 'banyar@yahoo.com', '23235645yghgf'),
-(2, 'Mas Mapmup', 'mapmup@gmail.com', 'dncskdcndscsdcdsc'),
-(4, 'Boronong', 'borononn@yahoo.com', '032bcsjdncsdjc3223'),
-(5, 'Nadya Ek', 'nadya@yahoo.com', 'bonbon032932');
+(1, 'Guang Wong', 'guangwong@gmail.com', '23235645yghgf'),
+(2, 'Mario Du', 'dujiakun@gmail.com', 'dncskdcndscsdcdsc'),
+(3, 'Harry Che', 'czy88840616@gmail.com', '032bcsjdncsdjc3223'),
+(4, 'Nadya Ek', 'nadya@yahoo.com', 'bonbon032932');
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

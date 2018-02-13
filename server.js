@@ -1,8 +1,13 @@
-var express  = require('express'),
-    path     = require('path'),
-    bodyParser = require('body-parser'),
-    app = express(),
-    expressValidator = require('express-validator');
+const express = require('express');
+const path = require('path');
+const bodyParser = require('body-parser');
+const app = express();
+const expressValidator = require('express-validator');
+const gravatar = require('gravatar');
+const urllib = require('urllib');
+
+const {MetricsClientUtil} = require('dorapan');
+const client = MetricsClientUtil.getMetricsClient();
 
 
 /*Set EJS template Engine*/
@@ -15,11 +20,10 @@ app.use(bodyParser.json());
 app.use(expressValidator());
 
 /*MySql connection*/
-var connection  = require('express-myconnection'),
-    mysql = require('mysql');
+const connection  = require('express-myconnection');
+const mysql = require('mysql');
 
 app.use(
-
     connection(mysql,{
         host     : 'localhost',
         user     : 'root',
@@ -27,7 +31,6 @@ app.use(
         database : 'test',
         debug    : false //set true if you wanna see debug logger
     },'request')
-
 );
 
 app.get('/',function(req,res){
@@ -54,6 +57,9 @@ router.use(function(req, res, next) {
 var curut = router.route('/user');
 
 
+const successCounter = client.getCounter('custom', 'custom.gravatar.success');
+const failCounter = client.getCounter('custom', 'custom.gravatar.fail');
+
 //show the CRUD interface | GET
 curut.get(function(req,res,next){
 
@@ -69,7 +75,33 @@ curut.get(function(req,res,next){
                 return next("Mysql error, check your query");
             }
 
-            res.render('user',{title:"RESTful Crud Example",data:rows});
+            (async () => {
+
+
+              const userAvatars = {};
+              const promises = [];
+              for(const user of rows) {
+                  const profileUrl = gravatar.profile_url(user.email);
+                  promises.push(urllib.request(profileUrl, {followRedirect: true, dataType: 'json'}).then((res) => {
+                      if(typeof res.data === 'object') {
+                          successCounter.inc(1);
+                          userAvatars[user.email] = res.data;
+                      } else {
+                          failCounter.inc(1);
+                      }
+                  }));
+              }
+              await Promise.all(promises);
+              for(const user of rows) {
+                  if(userAvatars.hasOwnProperty(user.email)) {
+                      const profile = userAvatars[user.email].entry[0];
+                      user.gravatar = profile;
+                  }
+              }
+              res.render('user',{title:"RESTful Crud Example",data:rows});
+            
+            })().catch(next);
+
 
          });
 
