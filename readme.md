@@ -26,6 +26,13 @@ server.js
 	
 You're gonna need to create a DB named 'test' or whatever you name it,  import t_user.sql
 
+## Start with Pandora.js 
+
+After you installed Pandora.js global command line, then you can just run `pandora start` as below.
+
+```bash
+$ pandora start
+```
 
 ## Open your Browser
 And type: localhost:3000/api/user
